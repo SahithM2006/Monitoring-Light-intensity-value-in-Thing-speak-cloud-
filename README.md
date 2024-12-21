@@ -90,8 +90,64 @@ Prototype and build IoT systems without setting up servers or developing web sof
 
  
 # PROGRAM:
+```
+ #include"ThingSpeak.h"
+#include <WiFi.h>
+
+char ssid[]="hu79235G";
+char pass[]="Tablemat#123";
+
+const int LDR_PIN=34;
+//#define LDR_PIN 34
+WiFiClient client;
+
+unsigned long myChannelField = 2754605;
+const int ChannelField1 = 1 ; 
+
+const char *myWriteAPIKey="3A29NBTX5HQIRDR6";   
+
+void setup()
+{
+  // Initialize serial communication at 115200 baud rate
+  Serial.begin(115200);
+  pinMode (LDR_PIN,OUTPUT);
+  WiFi.mode(WIFI_STA);
+  ThingSpeak.begin(client);
+  
+  Serial.println("LDR Sensor with ESP32 WROOM");
+  delay(1000);
+}
+void loop()
+{
+  if(WiFi.status()!=WL_CONNECTED)
+  {
+    Serial.print("Attempting to connet to SSID: "); 
+    Serial.println(ssid);
+    while(WiFi.status() != WL_CONNECTED)
+    {
+      WiFi.begin(ssid, pass);
+      Serial.print(".");
+      delay(5000);
+    }
+    Serial.println("\nConnected");
+  }
+  // Read the value from the LDR
+  int ldrValue = analogRead(LDR_PIN);
+
+  // Print the LDR value to the Serial Monitor
+  Serial.print("LDR Value: ");
+  Serial.println(ldrValue);
+  ThingSpeak.writeField(myChannelField,ChannelField1,ldrValue, myWriteAPIKey);
+  // Optional: Add a delay for a more stable output
+  delay(1000); // 1-second delay between readings
+}
+```
 # CIRCUIT DIAGRAM:
+![Screenshot 2024-12-21 152825](https://github.com/user-attachments/assets/e0e4b130-7686-4525-bd2e-45413265f492)
+
 # OUTPUT:
+![Screenshot 2024-12-21 152844](https://github.com/user-attachments/assets/c85fe27c-6a7f-4262-9f11-92bb5ca98ff2)
+
 # RESULT:
 
 Thus the light intensity values are updated in the Thing speak cloud using ESP32 controller.
